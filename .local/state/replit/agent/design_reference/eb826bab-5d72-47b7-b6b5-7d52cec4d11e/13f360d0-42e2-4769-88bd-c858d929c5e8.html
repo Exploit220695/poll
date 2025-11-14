@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Honeypot - Cyber Threat Detection System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'dark-bg': '#0F1419',
+                        'dark-card': '#1F2937',
+                        'dark-border': '#374151',
+                        'dark-text': '#F9FAFB',
+                        'dark-text-secondary': '#9CA3AF'
+                    }
+                }
+            }
+        };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .chart-container {
+            background: linear-gradient(135deg, #1F2937 0%, #374151 100%);
+        }
+        .glow-red { box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
+        .glow-green { box-shadow: 0 0 10px rgba(16, 185, 129, 0.3); }
+        .glow-yellow { box-shadow: 0 0 10px rgba(245, 158, 11, 0.3); }
+        .animate-pulse-slow { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    </style>
+</head>
+<body class="bg-dark-bg text-dark-text min-h-screen">
+
+<!-- @COMPONENT: Navigation Sidebar -->
+<div class="flex h-screen">
+    <aside class="w-64 bg-dark-card border-r border-dark-border flex-shrink-0">
+        <div class="p-6 border-b border-dark-border">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-shield-alt text-white text-sm"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-dark-text">HoneyGuard</h1>
+                    <p class="text-xs text-dark-text-secondary">AI Threat Detection</p>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="mt-6">
+            <div class="px-6 mb-4">
+                <h3 class="text-xs font-semibold text-dark-text-secondary uppercase tracking-wide">Main</h3>
+            </div>
+            <ul class="space-y-1">
+                <li><a href="#" class="flex items-center px-6 py-3 text-sm bg-red-600 text-white rounded-r-lg mr-4"><i class="fas fa-tachometer-alt w-5 mr-3"></i>Dashboard</a></li>
+                <li><a href="#" class="flex items-center px-6 py-3 text-sm text-dark-text-secondary hover:text-white hover:bg-dark-border rounded-r-lg mr-4"><i class="fas fa-network-wired w-5 mr-3"></i>Traffic Monitor</a></li>
+                <li><a href="#" class="flex items-center px-6 py-3 text-sm text-dark-text-secondary hover:text-white hover:bg-dark-border rounded-r-lg mr-4"><i class="fas fa-exclamation-triangle w-5 mr-3"></i>Anomaly Detection</a></li>
+                <li><a href="#" class="flex items-center px-6 py-3 text-sm text-dark-text-secondary hover:text-white hover:bg-dark-border rounded-r-lg mr-4"><i class="fas fa-bell w-5 mr-3"></i>Alerts</a></li>
+            </ul>
+            
+            <div class="px-6 mt-8 mb-4">
+                <h3 class="text-xs font-semibold text-dark-text-secondary uppercase tracking-wide">Analysis</h3>
+            </div>
+            <ul class="space-y-1">
+                <li><a href="#" class="flex items-center px-6 py-3 text-sm text-dark-text-secondary hover:text-white hover:bg-dark-border rounded-r-lg mr-4"><i class="fas fa-file-alt w-5 mr-3"></i>Log Analysis</a></li>
+                <li><a href="#" class="flex items-center px-6 py-3 text-sm text-dark-text-secondary hover:text-white hover:bg-dark-border rounded-r-lg mr-4"><i class="fas fa-chart-line w-5 mr-3"></i>Threat Patterns</a></li>
+                <li><a href="#" class="flex items-center px-6 py-3 text-sm text-dark-text-secondary hover:text-white hover:bg-dark-border rounded-r-lg mr-4"><i class="fas fa-brain w-5 mr-3"></i>ML Models</a></li>
+            </ul>
+            
+            <div class="px-6 mt-8 mb-4">
+                <h3 class="text-xs font-semibold text-dark-text-secondary uppercase tracking-wide">System</h3>
+            </div>
+            <ul class="space-y-1">
+                <li><a href="#" class="flex items-center px-6 py-3 text-sm text-dark-text-secondary hover:text-white hover:bg-dark-border rounded-r-lg mr-4"><i class="fas fa-cog w-5 mr-3"></i>Configuration</a></li>
+                <li><a href="#" class="flex items-center px-6 py-3 text-sm text-dark-text-secondary hover:text-white hover:bg-dark-border rounded-r-lg mr-4"><i class="fas fa-download w-5 mr-3"></i>Export Data</a></li>
+            </ul>
+        </nav>
+        
+        <div class="absolute bottom-4 left-4 right-4">
+            <div class="bg-green-600 rounded-lg p-3 text-xs">
+                <div class="flex items-center justify-between">
+                    <span class="text-white font-medium">System Status</span>
+                    <div class="w-2 h-2 bg-white rounded-full animate-pulse-slow"></div>
+                </div>
+                <p class="text-green-100 mt-1">All services online</p>
+            </div>
+        </div>
+    </aside>
+<!-- @END_COMPONENT: Navigation Sidebar -->
+
+    <main class="flex-1 overflow-hidden">
+        <!-- @COMPONENT: Top Header -->
+        <header class="bg-dark-card border-b border-dark-border p-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-semibold text-dark-text">Threat Detection Dashboard</h2>
+                    <p class="text-dark-text-secondary text-sm">Real-time honeypot monitoring and anomaly analysis</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2 bg-dark-bg rounded-lg px-3 py-2">
+                        <i class="fas fa-clock text-dark-text-secondary"></i>
+                        <span class="text-sm text-dark-text-secondary" data-bind="currentTime">15:23:45 UTC</span>
+                    </div>
+                    <button class="flex items-center space-x-2 bg-red-600 hover:bg-red-700 rounded-lg px-4 py-2 text-white text-sm font-medium">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Refresh</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+        <!-- @END_COMPONENT: Top Header -->
+
+        <div class="p-6 h-full overflow-auto">
+            <!-- @COMPONENT: Stats Overview Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-dark-card rounded-xl border border-dark-border p-6 glow-green">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-dark-text-secondary text-sm font-medium">Total Requests</p>
+                            <p class="text-2xl font-bold text-dark-text mt-1" data-bind="totalRequests">24,567</p>
+                            <p class="text-green-500 text-sm mt-1"><i class="fas fa-arrow-up"></i> +12.5% from yesterday</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-globe text-green-600 text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-dark-card rounded-xl border border-dark-border p-6 glow-red">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-dark-text-secondary text-sm font-medium">Detected Threats</p>
+                            <p class="text-2xl font-bold text-dark-text mt-1" data-bind="detectedThreats">147</p>
+                            <p class="text-red-500 text-sm mt-1"><i class="fas fa-arrow-up"></i> +8 in last hour</p>
+                        </div>
+                        <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-exclamation-triangle text-red-600 text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-dark-card rounded-xl border border-dark-border p-6 glow-yellow">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-dark-text-secondary text-sm font-medium">Anomaly Score</p>
+                            <p class="text-2xl font-bold text-dark-text mt-1" data-bind="anomalyScore">7.2/10</p>
+                            <p class="text-yellow-500 text-sm mt-1"><i class="fas fa-minus"></i> Stable activity</p>
+                        </div>
+                        <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-brain text-yellow-600 text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-dark-card rounded-xl border border-dark-border p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-dark-text-secondary text-sm font-medium">ML Accuracy</p>
+                            <p class="text-2xl font-bold text-dark-text mt-1" data-bind="mlAccuracy">94.7%</p>
+                            <p class="text-blue-500 text-sm mt-1"><i class="fas fa-chart-line"></i> Model performing well</p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-robot text-blue-600 text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_COMPONENT: Stats Overview Cards -->
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- @COMPONENT: Real-time Traffic Chart -->
+                <div class="bg-dark-card rounded-xl border border-dark-border p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-semibold text-dark-text">Real-time Traffic Analysis</h3>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                            <span class="text-sm text-dark-text-secondary">Live</span>
+                        </div>
+                    </div>
+                    <div class="chart-container rounded-lg p-4 h-64 flex items-center justify-center">
+                        <!-- Chart visualization would be implemented with Chart.js or D3.js -->
+                        <div class="text-center">
+                            <i class="fas fa-chart-area text-6xl text-dark-text-secondary mb-4"></i>
+                            <p class="text-dark-text-secondary">Real-time traffic chart</p>
+                            <p class="text-xs text-dark-text-secondary mt-1">Chart.js integration needed</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: Real-time Traffic Chart -->
+
+                <!-- @COMPONENT: Threat Detection Status -->
+                <div class="bg-dark-card rounded-xl border border-dark-border p-6">
+                    <h3 class="text-lg font-semibold text-dark-text mb-6">Threat Detection Models</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-4 bg-dark-bg rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-tree text-green-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-dark-text font-medium">Random Forest</h4>
+                                    <p class="text-dark-text-secondary text-sm">Supervised Classification</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                    <span class="text-sm text-green-500 font-medium">Active</span>
+                                </div>
+                                <p class="text-dark-text text-sm mt-1">96.2% Accuracy</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-dark-bg rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-project-diagram text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-dark-text font-medium">Isolation Forest</h4>
+                                    <p class="text-dark-text-secondary text-sm">Anomaly Detection</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                    <span class="text-sm text-green-500 font-medium">Active</span>
+                                </div>
+                                <p class="text-dark-text text-sm mt-1">92.8% Precision</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-dark-bg rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-layer-group text-purple-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-dark-text font-medium">LSTM Autoencoder</h4>
+                                    <p class="text-dark-text-secondary text-sm">Deep Learning</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                                    <span class="text-sm text-yellow-500 font-medium">Training</span>
+                                </div>
+                                <p class="text-dark-text text-sm mt-1">Learning new patterns</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: Threat Detection Status -->
+            </div>
+
+            <!-- @COMPONENT: Recent Alerts and Log Analysis -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <div class="lg:col-span-2 bg-dark-card rounded-xl border border-dark-border p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-semibold text-dark-text">Recent Security Alerts</h3>
+                        <button class="text-sm text-red-500 hover:text-red-400 font-medium">View All</button>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <!-- @MAP: alerts.map(alert => ( -->
+                        <div class="flex items-center justify-between p-4 bg-red-900/20 border border-red-800 rounded-lg" data-mock="true">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-exclamation text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-dark-text font-medium">SQL Injection Detected</h4>
+                                    <p class="text-dark-text-secondary text-sm">IP: 192.168.1.100 | POST /login</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-red-500 text-sm font-medium">High Risk</span>
+                                <p class="text-dark-text-secondary text-xs mt-1">2 min ago</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-yellow-900/20 border border-yellow-800 rounded-lg" data-mock="true">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-yellow-600 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-shield-alt text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-dark-text font-medium">Brute Force Attempt</h4>
+                                    <p class="text-dark-text-secondary text-sm">IP: 203.45.67.89 | Multiple failed logins</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-yellow-500 text-sm font-medium">Medium Risk</span>
+                                <p class="text-dark-text-secondary text-xs mt-1">5 min ago</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-orange-900/20 border border-orange-800 rounded-lg" data-mock="true">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-code text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-dark-text font-medium">XSS Attack Blocked</h4>
+                                    <p class="text-dark-text-secondary text-sm">IP: 198.123.45.67 | Script injection attempt</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-orange-500 text-sm font-medium">Medium Risk</span>
+                                <p class="text-dark-text-secondary text-xs mt-1">12 min ago</p>
+                            </div>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+                </div>
+
+                <!-- @COMPONENT: Attack Vector Distribution -->
+                <div class="bg-dark-card rounded-xl border border-dark-border p-6">
+                    <h3 class="text-lg font-semibold text-dark-text mb-6">Attack Vectors (24h)</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-dark-text text-sm">SQL Injection</span>
+                                <span class="text-dark-text text-sm font-medium" data-bind="sqlInjectionCount">34%</span>
+                            </div>
+                            <div class="w-full bg-dark-bg rounded-full h-2">
+                                <div class="bg-red-600 h-2 rounded-full" style="width: 34%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-dark-text text-sm">Brute Force</span>
+                                <span class="text-dark-text text-sm font-medium" data-bind="bruteForceCount">28%</span>
+                            </div>
+                            <div class="w-full bg-dark-bg rounded-full h-2">
+                                <div class="bg-orange-600 h-2 rounded-full" style="width: 28%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-dark-text text-sm">XSS</span>
+                                <span class="text-dark-text text-sm font-medium" data-bind="xssCount">22%</span>
+                            </div>
+                            <div class="w-full bg-dark-bg rounded-full h-2">
+                                <div class="bg-yellow-600 h-2 rounded-full" style="width: 22%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-dark-text text-sm">Port Scanning</span>
+                                <span class="text-dark-text text-sm font-medium" data-bind="portScanCount">16%</span>
+                            </div>
+                            <div class="w-full bg-dark-bg rounded-full h-2">
+                                <div class="bg-blue-600 h-2 rounded-full" style="width: 16%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: Attack Vector Distribution -->
+            </div>
+
+            <!-- @COMPONENT: Detailed Log Analysis Table -->
+            <div class="bg-dark-card rounded-xl border border-dark-border p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-dark-text">Live Traffic Log Analysis</h3>
+                    <div class="flex items-center space-x-3">
+                        <button class="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 rounded-lg px-3 py-2 text-white text-sm">
+                            <i class="fas fa-download"></i>
+                            <span>Export</span>
+                        </button>
+                        <button class="flex items-center space-x-2 bg-dark-bg hover:bg-dark-border rounded-lg px-3 py-2 text-dark-text text-sm border border-dark-border">
+                            <i class="fas fa-filter"></i>
+                            <span>Filter</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-dark-border">
+                                <th class="text-left py-3 px-4 text-dark-text-secondary text-sm font-medium">Timestamp</th>
+                                <th class="text-left py-3 px-4 text-dark-text-secondary text-sm font-medium">Source IP</th>
+                                <th class="text-left py-3 px-4 text-dark-text-secondary text-sm font-medium">Method</th>
+                                <th class="text-left py-3 px-4 text-dark-text-secondary text-sm font-medium">Endpoint</th>
+                                <th class="text-left py-3 px-4 text-dark-text-secondary text-sm font-medium">Threat Level</th>
+                                <th class="text-left py-3 px-4 text-dark-text-secondary text-sm font-medium">Classification</th>
+                                <th class="text-left py-3 px-4 text-dark-text-secondary text-sm font-medium">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- @MAP: logEntries.map(entry => ( -->
+                            <tr class="border-b border-dark-border hover:bg-dark-bg" data-mock="true">
+                                <td class="py-3 px-4 text-dark-text text-sm">15:23:42</td>
+                                <td class="py-3 px-4 text-dark-text text-sm font-mono">192.168.1.100</td>
+                                <td class="py-3 px-4">
+                                    <span class="bg-red-600 text-white px-2 py-1 rounded text-xs font-medium">POST</span>
+                                </td>
+                                <td class="py-3 px-4 text-dark-text text-sm font-mono">/login</td>
+                                <td class="py-3 px-4">
+                                    <span class="bg-red-600 text-white px-2 py-1 rounded text-xs font-medium">HIGH</span>
+                                </td>
+                                <td class="py-3 px-4 text-dark-text text-sm">SQL Injection</td>
+                                <td class="py-3 px-4">
+                                    <button class="text-blue-500 hover:text-blue-400 text-sm"><i class="fas fa-eye"></i> View</button>
+                                </td>
+                            </tr>
+                            
+                            <tr class="border-b border-dark-border hover:bg-dark-bg" data-mock="true">
+                                <td class="py-3 px-4 text-dark-text text-sm">15:23:38</td>
+                                <td class="py-3 px-4 text-dark-text text-sm font-mono">203.45.67.89</td>
+                                <td class="py-3 px-4">
+                                    <span class="bg-blue-600 text-white px-2 py-1 rounded text-xs font-medium">GET</span>
+                                </td>
+                                <td class="py-3 px-4 text-dark-text text-sm font-mono">/admin</td>
+                                <td class="py-3 px-4">
+                                    <span class="bg-green-600 text-white px-2 py-1 rounded text-xs font-medium">LOW</span>
+                                </td>
+                                <td class="py-3 px-4 text-dark-text text-sm">Normal</td>
+                                <td class="py-3 px-4">
+                                    <button class="text-blue-500 hover:text-blue-400 text-sm"><i class="fas fa-eye"></i> View</button>
+                                </td>
+                            </tr>
+                            
+                            <tr class="border-b border-dark-border hover:bg-dark-bg" data-mock="true">
+                                <td class="py-3 px-4 text-dark-text text-sm">15:23:35</td>
+                                <td class="py-3 px-4 text-dark-text text-sm font-mono">198.123.45.67</td>
+                                <td class="py-3 px-4">
+                                    <span class="bg-red-600 text-white px-2 py-1 rounded text-xs font-medium">POST</span>
+                                </td>
+                                <td class="py-3 px-4 text-dark-text text-sm font-mono">/search</td>
+                                <td class="py-3 px-4">
+                                    <span class="bg-yellow-600 text-white px-2 py-1 rounded text-xs font-medium">MED</span>
+                                </td>
+                                <td class="py-3 px-4 text-dark-text text-sm">XSS Attempt</td>
+                                <td class="py-3 px-4">
+                                    <button class="text-blue-500 hover:text-blue-400 text-sm"><i class="fas fa-eye"></i> View</button>
+                                </td>
+                            </tr>
+                            <!-- @END_MAP )) -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="flex items-center justify-between mt-6 pt-4 border-t border-dark-border">
+                    <p class="text-dark-text-secondary text-sm">Showing 1-20 of 2,847 entries</p>
+                    <div class="flex items-center space-x-2">
+                        <button class="px-3 py-1 border border-dark-border rounded text-sm text-dark-text-secondary hover:bg-dark-bg">Previous</button>
+                        <button class="px-3 py-1 bg-red-600 text-white rounded text-sm">1</button>
+                        <button class="px-3 py-1 border border-dark-border rounded text-sm text-dark-text-secondary hover:bg-dark-bg">2</button>
+                        <button class="px-3 py-1 border border-dark-border rounded text-sm text-dark-text-secondary hover:bg-dark-bg">3</button>
+                        <button class="px-3 py-1 border border-dark-border rounded text-sm text-dark-text-secondary hover:bg-dark-bg">Next</button>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_COMPONENT: Detailed Log Analysis Table -->
+        </div>
+    </main>
+</div>
+
+<script>
+    // TODO: Implement real-time WebSocket connections for live data updates
+    // TODO: Integrate Chart.js for traffic visualization charts
+    // TODO: Add machine learning model status monitoring
+    // TODO: Implement export functionality for logs and reports
+    // TODO: Add filtering and search capabilities for log analysis
+    
+    (function() {
+        // Simple time updater for demonstration
+        function updateTime() {
+            const timeElement = document.querySelector('[data-bind="currentTime"]');
+            if (timeElement) {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', { 
+                    hour12: false, 
+                    timeZone: 'UTC'
+                }) + ' UTC';
+                timeElement.textContent = timeString;
+            }
+        }
+        
+        // Update time every second
+        setInterval(updateTime, 1000);
+        updateTime(); // Initial call
+        
+        // Simulate real-time data updates (placeholder)
+        function simulateDataUpdates() {
+            // This would be replaced with actual WebSocket or polling implementation
+            const stats = {
+                totalRequests: Math.floor(Math.random() * 1000) + 24000,
+                detectedThreats: Math.floor(Math.random() * 50) + 140,
+                anomalyScore: (Math.random() * 3 + 6).toFixed(1),
+                mlAccuracy: (Math.random() * 5 + 92).toFixed(1)
+            };
+            
+            // Update DOM elements with new data
+            Object.entries(stats).forEach(([key, value]) => {
+                const element = document.querySelector(`[data-bind="${key}"]`);
+                if (element) {
+                    element.textContent = key === 'anomalyScore' ? value + '/10' : 
+                                          key === 'mlAccuracy' ? value + '%' : 
+                                          value.toLocaleString();
+                }
+            });
+        }
+        
+        // Simulate updates every 5 seconds
+        setInterval(simulateDataUpdates, 5000);
+    })();
+</script>
+
+</body>
+</html>

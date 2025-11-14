@@ -1,0 +1,65 @@
+Tahapan Penelitian
+
+Studi Literatur
+
+Mempelajari konsep honeypot, jenis serangan pada web server (SQL Injection, XSS, Brute Force, DDoS), analisis log, serta penerapan machine learning untuk deteksi anomali.
+
+Mengkaji dataset publik (CICIDS2017, NSL-KDD, Malware Traffic Dataset) sebagai referensi awal untuk model deteksi.
+
+Perancangan Sistem
+
+Menyusun arsitektur honeypot cerdas berbasis AI yang ditempatkan pada web server dengan port terbuka dan layanan umpan.
+
+Menentukan pipeline deteksi anomali (koleksi log → preprocessing → analisis otomatis → klasifikasi → dashboard).
+
+Menyiapkan dataset awal (log normal vs log serangan).
+
+Implementasi
+
+Honeypot: membangun honeypot (Cowrie, Dionaea, atau Glastopf) untuk menangkap traffic berbahaya.
+
+Traffic Capture & Logging: log disimpan melalui ELK Stack (Logstash, Elasticsearch, Kibana) atau log server (Apache/Nginx).
+
+Preprocessing Data: parsing log (IP, port, request method, response code, payload).
+
+Deteksi & Klasifikasi:
+
+Menggunakan algoritma supervised (Random Forest, SVM) untuk klasifikasi awal.
+
+Menggunakan algoritma unsupervised (Isolation Forest, DBSCAN, Autoencoder, atau LSTM) untuk mendeteksi serangan baru/anomali.
+
+Framework: Python (Scikit-learn, TensorFlow, PyTorch).
+
+Penyimpanan & Pembaruan Dataset: log serangan baru disimpan dan dataset diperbarui secara otomatis.
+
+Dashboard & Notifikasi: hasil analisis divisualisasikan dengan Kibana/Grafana, notifikasi dikirim melalui Email, Telegram Bot, atau Slack/Discord webhook.
+
+Pengujian Sistem
+
+Melakukan uji coba dengan traffic normal (akses user valid) dan traffic anomali (serangan simulasi seperti SQL Injection, XSS, brute force, port scanning, malware injection).
+
+Sistem diuji dalam dua skenario:
+
+Traffic normal → harus dikenali sebagai akses valid.
+
+Traffic anomali → harus dikenali sebagai serangan.
+
+Evaluasi Kinerja
+
+Parameter pengujian:
+
+Akurasi, Precision, Recall → performa klasifikasi.
+
+True Positive Rate (TPR) dan False Positive Rate (FPR).
+
+False Negative Rate (FNR).
+
+Latency deteksi → waktu dari serangan masuk hingga notifikasi diterima.
+
+Kemampuan adaptasi dataset → seberapa cepat sistem belajar dari serangan baru.
+
+Visualisasi & Pelaporan
+
+Semua hasil analisis ditampilkan dalam dashboard realtime (Kibana/Grafana).
+
+Laporan akhir berisi pola serangan, tingkat anomali, performa sistem, dan evaluasi efektivitas honeypot cerdas.
